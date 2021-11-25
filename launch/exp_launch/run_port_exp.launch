@@ -1,0 +1,60 @@
+<launch>
+    
+    <!--- Sim Time -->
+    <param name="/use_sim_time" value="true" />
+    
+    <!--- Run Rviz-->
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find lins)/config/rviz_config/lins_rviz_config.rviz" />
+
+    <!-- <include file="$(find rviz_satellite)/launch/demo.launch"/> -->
+
+    <!-- <include file="$(find lins)/launch/imuOdometry.launch"/> -->
+ 
+    <!--- TF -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="camera_init_to_map"  args="0 0 0 1.570795   0        1.570795 /pcl_map    /camera_init 10" />
+    <node pkg="tf" type="static_transform_publisher" name="vehicle_to_camera" args="0 0 0 -1.570795 -1.570795 0        /camera /vehicle   10" /> -->
+    
+    <!--- Config Path -->
+    <arg name="file_path" default="$(env HOME)/Downloads/ROSfile/GDUT_map" />
+    <arg name="config_path" default = "$(find lins)/config/exp_config/exp_port.yaml" />
+    <arg name="init_pose" value = "$(arg file_path)/init_pose.yaml" />
+    <arg name="osm_file" value = "$(arg file_path)/GDUT_2_josm.osm" />
+
+    <!-- if running with rosbag -->
+    <include file="$(find lins)/launch/staticTFpub.launch">
+        <arg name="init_pose" value="$(arg init_pose)" />
+        <arg name="osm_file" value="$(arg osm_file)" />
+    </include>
+
+    <!--- LINS -->   
+    <node pkg="lins" type="image_projection_node"    name="image_projection_node"    output="screen">
+        <param name="config_file" type="string" value="$(arg config_path)" />
+    </node>
+
+    <node pkg="lins" type="transform_fusion_node"    name="transform_fusion_node"    output="screen">
+        <param name="config_file" type="string" value="$(arg config_path)" />
+        <param name="init_pose" type="string" value="$(arg init_pose)" />
+    </node>
+    
+    <node pkg="lins" type="lins_fusion_node"    name="lins_fusion_node"    output="screen">
+        <param name="config_file" type="string" value="$(arg config_path)" />
+    </node>
+    
+    <node pkg="lins" type="lidar_mapping_node"     name="lidar_mapping_node"     output="screen">
+        <param name="config_file" type="string" value="$(arg config_path)" />
+        <!-- 表示GPS和雷达间的旋转外参，如果融合GPS时需要设置好准确值，否则融合会异常 -->
+        <!-- 注意yaw_G2L与localization节点的mappingCarYawPara相等，否则定位结果有偏移 -->
+        <param name="yaw_G2L" type="double" value="0.00" />
+        <param name="pitch_G2L" type="double" value="0.0" />
+        <param name="roll_G2L" type="double" value="0.0" />
+        <!-- customized_gps_msg = true, 使用自定义的GPS消息类型Sleipnir_msgs::sensorgps -->
+        <!-- customized_gps_msg = false, 使用通用标准的GPS消息类型(sensor_msgs::NavSatFix) -->
+        <param name="customized_gps_msg" type="bool" value="true" />
+        <!-- 是否保存特征点云地图 -->
+        <param name="SaveMap" type="bool" value="true" />
+        <!-- 是否融合GPS因子 -->
+        <param name="useGPSfactor" type="bool" value="false" />
+        <!-- 建图生成的所有结果放在这个目录下 -->
+        <param name="FileDir" type="string" value="$(env HOME)/Downloads/local_map/0903_map/" />
+    </node>
+</launch>

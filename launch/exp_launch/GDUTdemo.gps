@@ -1,0 +1,14 @@
+header:
+  seq: 37716
+  stamp:
+    secs: 1596888000
+    nsecs: 15865912
+  frame_id: /rvizgps
+status:
+  status: 0
+  service: 1
+latitude: 23.0384348
+longitude: 113.3912863
+altitude: 4.67000007629395
+position_covariance: [3.9561210000000004, 0.0, 0.0, 0.0, 3.9561210000000004, 0.0, 0.0, 0.0, 7.650756]
+position_covariance_type: 2

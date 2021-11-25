@@ -1,0 +1,26 @@
+<launch>
+    
+    <!--- Sim Time -->
+    <!-- <param name="/use_sim_time" value="true" /> -->
+
+    <arg name="init_pose" default = "$(env HOME)/Downloads/local_map/GDUT地图/init_pose.yaml" />
+    <arg name="osm_file" default = "$(env HOME)/Downloads/local_map/GDUT地图/GDUT_2_josm.osm" />
+
+    <!-- Static fake TF transform -->
+    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="static_tf_fake" args="0 0 0 0 0 0 /map /rvizgps" /> -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="map_to_local_map" args="0 0 0  -0.43 0.0 0.0  /map /local_map 100" /> -->
+    <node pkg="lins" type="staticTFpub_node" name="staticTFpub_node" output="screen">
+        <param name="init_pose" type="string" value="$(arg init_pose)" />
+        <param name="osm_file" type="string" value="$(arg osm_file)" />
+    </node>
+    <!--- TF -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="camera_init_to_map"  args="0 0 0 1.570795   0        1.570795 /pcl_map    /camera_init 100" />
+    <node pkg="tf" type="static_transform_publisher" name="base_link_to_camera" args="0 0 0 -1.570795 -1.570795 0        /loam_camera /vehicle   100" />
+    <node pkg="tf" type="static_transform_publisher" name="base_link_to_velodyne" args="0 0 0 0 0 0    /vehicle /rslidar  100" /> -->
+
+    <!-- tf -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="map_2_planning_map" args="45050.45 49666.61 0 0.0 0 0 /map planning_map 100" /> -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="planning_map_2_planning_odom" args="0 0 0 0.0 0 0 /planning_map /planning_odom 100" /> -->
+
+
+</launch>

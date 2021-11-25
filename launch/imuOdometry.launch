@@ -1,0 +1,25 @@
+<launch>
+    
+    <!--- Sim Time -->
+    <param name="/use_sim_time" value="true" />
+
+    <include file="$(find rviz_satellite)/launch/demo.launch"/>
+    
+
+    <!-- Static fake TF transform -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="map_to_rviz" args="0 0 0  0.0157 0.0 0.0  /map /rvizgps 100" /> -->
+    <node pkg="tf" type="static_transform_publisher" name="map_to_local_map" args="0 0 0  -0.43 0.0 0.0  /map /local_map 100" />
+
+    <!--- Run Rviz-->
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find lins)/launch/ImuOdometry.rviz" />
+    <param name="gpsValidNumThes"   value="15"    type="int" />
+    <param name="tranErrThes"   value="0.08"    type="double" />
+    <param name="angleErrThes"   value="0.08"    type="double" />
+    <param name="gpsMeasSkip"   value="1"    type="int" />
+    <param name="planePitchThes"   value="5.0"    type="double" />
+
+    <!-- <node pkg="lego_loam" type="mapOptmization"     name="mapOptmization"     output="screen"/> -->
+    <node pkg="lins" type="ImuFactorDemo"     name="ImuFactorDemo"     output="screen">
+    </node>
+
+</launch>
