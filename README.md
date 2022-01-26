@@ -6,7 +6,7 @@ We propose a system that can fuse IMU, LiDAR and intermittent GPS measurements t
 
 ## System architecture
 
-![](./pic/global graph.png)
+![](./pic/global_graph.png)
 
 <img src="./pic/vehicle and sensor mounting.png" style="zoom:50%;" />
 
