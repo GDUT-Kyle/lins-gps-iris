@@ -288,6 +288,7 @@ class TransformFusion {
   {
     // get the GPS origination
     // 我们车上使用的星网宇达GPS接收器，他的航向角方向与笛卡尔直角坐标系相反
+    // 加上外参，初始姿态转到雷达坐标系下
     Eigen::Vector3d  InitEulerAngle=Eigen::Vector3d((-OriYaw+90.0)*deg+mappingCarYawPara, -OriPitch*deg, OriRoll*deg);
     // cout<<"mappingCarYawPara: "<<mappingCarYawPara<<endl;
     Eigen::AngleAxisd rollAngle(Eigen::AngleAxisd(InitEulerAngle(2),Eigen::Vector3d::UnitX()));
@@ -326,6 +327,7 @@ class TransformFusion {
     UTMFixPose.w() = init_fix_odom_pose.w();
 
     Eigen::AngleAxisd rv_transformTobeMapped;
+    // 减去外参，转到GPS坐标系
     rv_transformTobeMapped=Eigen::AngleAxisd(transformMapped[2],Vector3d::UnitZ())*
                             Eigen::AngleAxisd(transformMapped[0],Vector3d::UnitX())*
                             // 这里应该是减去外参
@@ -339,6 +341,7 @@ class TransformFusion {
     // cout<<setprecision(12)<<"V_transformTobeMapped: ("<<V_transformTobeMapped.transpose()<<")"<<endl;
 
     UTMFixPosition = UTMFixPosition + UTMFixPose*V_transformTobeMapped;
+    // 跟前面的外参抵消，回到激光雷达坐标系
     UTMFixPose = UTMFixPose * Q_transformTobeMapped;
     Eigen::Vector3d EularUTMFixPose = UTMFixPose.toRotationMatrix().eulerAngles(1, 0, 2);
     // cout<<setprecision(12)<<"UTMFixPose: ("<<UTMFixPose.toRotationMatrix().eulerAngles(1, 0, 2).transpose()*rad<<")"<<endl;
@@ -371,7 +374,7 @@ class TransformFusion {
         gps4control_msg.heading = EularUTMFixPose[0]*rad - 180;
     }
     gps4control_msg.heading = 360-(gps4control_msg.heading+180)-90;
-    if(gps4control_msg.heading<0) gps4control_msg.heading+360;
+    if(gps4control_msg.heading<0) gps4control_msg.heading += 360;
 
     gps4control_msg.velocity = VehicleVelocity.norm();
     // gps4control_msg.heading = 
